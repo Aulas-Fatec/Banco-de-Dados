@@ -1,0 +1,59 @@
+create database exercicio;
+use exercicio;
+CREATE TABLE funcionario(
+cod_func INT PRIMARY KEY AUTO_INCREMENT, 
+fun_nome varchar(100) NOT NULL,
+    fun_cpf varchar(15) UNIQUE,
+    fun_salario DECIMAL(4,2) CHECK (fun_salario>=1000.00),
+    fun_endereco varchar(252),
+    fun_sexo char(1) CHECK (fun_sexo IN ('M', 'F')),
+    cod_super int,
+    CONSTRAINT fk_cod_super
+FOREIGN KEY(cod_super) REFERENCES funcionario(cod_func)
+);
+
+CREATE TABLE departamento(
+cod_depart INT(4) PRIMARY KEY AUTO_INCREMENT,
+nome_depart varchar(30) NOT NULL,
+    data_inicial_depart date
+);
+
+ALTER TABLE funcionario ADD COLUMN cod_depart INT(4);
+ALTER TABLE funcionario
+ADD CONSTRAINT fk_cod_depart
+FOREIGN KEY (cod_depart) REFERENCES departamento(cod_depart);
+
+CREATE TABLE dependente(
+seq INT(4),
+dep_nome varchar(100) NOT NULL,
+    dep_parent varchar(30)NOT NULL CHECK (dep_parent in ('PAI', 'MAE', 'IRMAOS', 'FILHO')),
+    dep_datanasc DATE,
+    cod_func INT,
+PRIMARY KEY (cod_func, seq),
+FOREIGN KEY (cod_func) REFERENCES funcionario(cod_func)
+);
+
+CREATE TABLE localizacao(
+cod_localizacao INT(4) PRIMARY KEY,
+    loc varchar(10),
+    cod_depart INT(4),
+    FOREIGN KEY (cod_depart) REFERENCES departamento(cod_depart)
+);
+
+CREATE TABLE projeto(
+cod_proj INT(4) PRIMARY KEY,
+    titulo_proj varchar(150) NOT NULL,
+    des_proj varchar(252),
+    data_cad DATE DEFAULT(CURRENT_DATE),
+    cod_depart INT(4),
+    FOREIGN KEY (cod_depart) REFERENCES departamento(cod_depart)
+);
+
+CREATE TABLE participa(
+par_horas varchar(50),
+    cod_func INT(4),
+    cod_proj INT(4),
+PRIMARY KEY (cod_func, cod_proj),
+FOREIGN KEY (cod_func) REFERENCES funcionario(cod_func),
+    FOREIGN KEY (cod_proj) REFERENCES projeto(cod_proj)
+);
